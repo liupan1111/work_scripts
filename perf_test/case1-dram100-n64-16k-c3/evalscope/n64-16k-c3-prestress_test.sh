@@ -73,7 +73,7 @@ CSV_FILE="./kv_cache_result.csv"
 
 show_help() {
     cat <<'EOF'
-用法: ./kv_prestress_test_90s.sh [选项]
+用法: ./n64-16k-c3-prestress_test.sh [选项]
 
 KV cache 预埋 + 缓存命中性能测试
 流程:

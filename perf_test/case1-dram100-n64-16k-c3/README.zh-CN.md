@@ -26,7 +26,7 @@ case1-dram100-n64-16k-c3/
 ├── README.md
 ├── README.zh-CN.md
 ├── evalscope/
-│   ├── n64-16k-c3-prestress_test_90s.sh  # 本用例使用此脚本
+│   ├── n64-16k-c3-prestress_test.sh  # 本用例使用此脚本
 │   ├── kv_prestress_test_90s.sh         # 其他场景备份
 │   └── kv_prestress_test_90s_30k64.sh    # 其他场景备份
 ├── lmcache/
@@ -119,7 +119,7 @@ curl -f http://192.168.255.85:8000/v1/models
 source /mooncake_test/venv/bin/activate
 mkdir -p /workspaces/work_scripts/perf_test/case1-dram100-n64-16k-c3/results/lmcache-fill
 cd /workspaces/work_scripts/perf_test/case1-dram100-n64-16k-c3/results/lmcache-fill
-bash /workspaces/work_scripts/perf_test/case1-dram100-n64-16k-c3/evalscope/n64-16k-c3-prestress_test_90s.sh
+bash /workspaces/work_scripts/perf_test/case1-dram100-n64-16k-c3/evalscope/n64-16k-c3-prestress_test.sh
 ```
 
 ### 3.4 停止并重启
@@ -135,7 +135,7 @@ bash /workspaces/work_scripts/perf_test/case1-dram100-n64-16k-c3/evalscope/n64-1
 source /mooncake_test/venv/bin/activate
 mkdir -p /workspaces/work_scripts/perf_test/case1-dram100-n64-16k-c3/results/lmcache-disk-hit
 cd /workspaces/work_scripts/perf_test/case1-dram100-n64-16k-c3/results/lmcache-disk-hit
-bash /workspaces/work_scripts/perf_test/case1-dram100-n64-16k-c3/evalscope/n64-16k-c3-prestress_test_90s.sh
+bash /workspaces/work_scripts/perf_test/case1-dram100-n64-16k-c3/evalscope/n64-16k-c3-prestress_test.sh
 ```
 
 记录第二轮结果及同期缓存命中/磁盘读取日志。完成后停止 LMCache 和 vLLM，再测试 YRCache。
@@ -172,7 +172,7 @@ curl -f http://192.168.255.85:8000/v1/models
 source /mooncake_test/venv/bin/activate
 mkdir -p /workspaces/work_scripts/perf_test/case1-dram100-n64-16k-c3/results/yrcache-fill
 cd /workspaces/work_scripts/perf_test/case1-dram100-n64-16k-c3/results/yrcache-fill
-bash /workspaces/work_scripts/perf_test/case1-dram100-n64-16k-c3/evalscope/n64-16k-c3-prestress_test_90s.sh
+bash /workspaces/work_scripts/perf_test/case1-dram100-n64-16k-c3/evalscope/n64-16k-c3-prestress_test.sh
 ```
 
 ### 4.4 停止并重启
@@ -195,7 +195,7 @@ ps -eo pid,ppid,args --forest | grep -E '[v]llm|[y]rcache'
 source /mooncake_test/venv/bin/activate
 mkdir -p /workspaces/work_scripts/perf_test/case1-dram100-n64-16k-c3/results/yrcache-disk-hit
 cd /workspaces/work_scripts/perf_test/case1-dram100-n64-16k-c3/results/yrcache-disk-hit
-bash /workspaces/work_scripts/perf_test/case1-dram100-n64-16k-c3/evalscope/n64-16k-c3-prestress_test_90s.sh
+bash /workspaces/work_scripts/perf_test/case1-dram100-n64-16k-c3/evalscope/n64-16k-c3-prestress_test.sh
 ```
 
 记录第二轮结果及同期缓存命中/磁盘读取日志，测试结束后停止本次实例。
@@ -205,7 +205,7 @@ bash /workspaces/work_scripts/perf_test/case1-dram100-n64-16k-c3/evalscope/n64-1
 每个结果目录下都有 `kv_cache_result.csv`，以及 `results/` 内的详细日志和 EvalScope 原始报告。比较 **`lmcache-disk-hit` 与 `yrcache-disk-hit`** 中的正式轮数据：平均 TTFT、平均 TPOT、输出吞吐、总吞吐。填充轮不计入性能对比。重新完整复测时使用新的结果目录名，避免 CSV 追加混入旧数据。
 
 - 两轮都直接运行本用例脚本，不加 `--only-prestress`。当前默认跳过脚本内部的 warmup/prestress 阶段，第一轮依靠相同的 64 个测试请求填充缓存；加该选项反而可能不发送任何请求。
-- 文件名中的 `90s` 是多用例之间的间隔，不是压测时长。当前只启用 `16k:3`，完成 64 个请求即结束。部分旧注释和结果目录名仍包含其他场景，以实际执行参数为准。
+- 当前只启用 `16k:3`，完成 64 个请求即结束。部分旧注释和结果目录名仍包含其他场景，以实际执行参数为准。
 - 两轮保持模型、tokenizer、seed、请求数和配置一致。重启后用 `/v1/models` 检查就绪，不要先发送这批目标请求预热。重复正式测量也要先完整重启服务。
 - `PASS` 不等于“全部命中盘缓存”。需检查实际成功请求数，并结合后端命中统计、盘读取及 miss 日志确认；仅观察到磁盘 I/O 不足以证明全命中。重启清除的是应用内存/GPU 缓存，不会清空操作系统 page cache；两边配置了 Direct I/O，仍需确认生效。
 - 原备份中 YRCache 显式关闭 vLLM prefix caching，LMCache 未显式设置；两边的异步加载等策略也不同。报告应保留实际配置及硬件信息，便于解释结果。

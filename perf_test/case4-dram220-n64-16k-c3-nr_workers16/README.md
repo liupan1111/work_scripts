@@ -52,7 +52,7 @@ curl -f http://192.168.255.85:8000/v1/models
 export PATH="/test/venv/bin:$PATH"
 mkdir -p /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/lmcache-fill
 cd /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/lmcache-fill
-bash /workspaces/case4-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test_90s.sh
+bash /workspaces/case4-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test.sh
 ```
 
 5. Confirm all 64 requests succeeded and disk writes finished without errors. Stop vLLM in B with Ctrl+C, then stop LMCache in A. Wait for their workers to exit. **Keep the disk data** and repeat steps 2–4 through the API readiness check only. Run the measurement below.
@@ -61,7 +61,7 @@ bash /workspaces/case4-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-pres
 export PATH="/test/venv/bin:$PATH"
 mkdir -p /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/lmcache-disk-hit
 cd /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/lmcache-disk-hit
-bash /workspaces/case4-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test_90s.sh
+bash /workspaces/case4-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test.sh
 ```
 
 Save the results and corresponding cache logs, then stop both services before switching backends.
@@ -94,7 +94,7 @@ curl -f http://192.168.255.85:8000/v1/models
 export PATH="/test/venv/bin:$PATH"
 mkdir -p /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/yrcache-fill
 cd /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/yrcache-fill
-bash /workspaces/case4-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test_90s.sh
+bash /workspaces/case4-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test.sh
 ```
 
 4. Confirm all 64 requests succeeded and checkpoint writes completed. Identify this instance's vLLM process.
@@ -109,7 +109,7 @@ Send `kill -TERM <PID>` to its main process and wait for its workers to exit. Ch
 export PATH="/test/venv/bin:$PATH"
 mkdir -p /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/yrcache-disk-hit
 cd /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/yrcache-disk-hit
-bash /workspaces/case4-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test_90s.sh
+bash /workspaces/case4-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test.sh
 ```
 
 Save the logs and stop the instance.
@@ -119,6 +119,6 @@ Save the logs and stop the instance.
 Compare average TTFT, average TPOT, output throughput and total throughput from the two `*-disk-hit` directories. Each run produces `kv_cache_result.csv` and detailed EvalScope reports under `results/`. Use fresh result directories for each repeat to avoid appending to an old CSV.
 
 - Run the case script as shown for both passes. Its default skips the internal warmup and prestress stages. Adding `--only-prestress` can send zero requests. The other two EvalScope scripts are backups for different workloads.
-- The `90s` suffix denotes the interval between cases. This case finishes after 64 requests. Keep the model, tokenizer, seed and workload identical. After restarting, check readiness through the models endpoint before replaying requests.
+- This case finishes after 64 requests. Keep the model, tokenizer, seed and workload identical. After restarting, check readiness through the models endpoint before replaying requests.
 - Verify the successful request count, disk-tier hits, misses and reads together. A PASS result or disk traffic alone cannot establish a full disk hit. Restarting clears application caches while the OS page cache persists. Verify Direct I/O is active for both backends.
 - Record hardware and backend settings alongside results. YRCache explicitly disables vLLM prefix caching. LMCache uses its configured default. Asynchronous loading policies can also affect comparisons. Keep generated results, logs, cached data and credentials out of Git.
