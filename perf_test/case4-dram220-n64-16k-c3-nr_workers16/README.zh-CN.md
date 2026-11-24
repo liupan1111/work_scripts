@@ -1,4 +1,4 @@
-# 220G-DRAM · case3-dram220-n64-16k-c3-nr_workers16：本地盘 KV 缓存命中性能测试
+# 220G-DRAM · case4-dram220-n64-16k-c3-nr_workers16：本地盘 KV 缓存命中性能测试
 
 [English](README.md) | 中文
 
@@ -24,7 +24,7 @@
 需提前准备模型、上述软件环境、可用 GPU 和容量足够的本地缓存盘。本目录只备份了脚本与配置，不包含模型、软件安装包或 LMCache 定制源码。
 
 ```text
-case3-dram220-n64-16k-c3-nr_workers16/
+case4-dram220-n64-16k-c3-nr_workers16/
 ├── README.md
 ├── README.zh-CN.md
 ├── evalscope/
@@ -43,7 +43,7 @@ case3-dram220-n64-16k-c3-nr_workers16/
 
 ## 2. 测试前需要修改的配置
 
-直接修改上述脚本和 YAML 中对应的值即可。本文命令以 `/workspaces/case3-dram220-n64-16k-c3-nr_workers16` 为 case 目录；如果放在其他位置，替换下文命令中的 case 路径即可。
+直接修改上述脚本和 YAML 中对应的值即可。本文命令以 `/workspaces/case4-dram220-n64-16k-c3-nr_workers16` 为 case 目录；如果放在其他位置，替换下文命令中的 case 路径即可。
 
 ### 2.1 通用配置
 
@@ -95,7 +95,7 @@ rm -rf /test/data_disk/case2-lmcache/*
 终端 A 启动 LMCache，保持终端运行：
 
 ```bash
-cd /workspaces/case3-dram220-n64-16k-c3-nr_workers16/lmcache
+cd /workspaces/case4-dram220-n64-16k-c3-nr_workers16/lmcache
 bash start_lmcache_io_metrics.sh
 ```
 
@@ -103,7 +103,7 @@ bash start_lmcache_io_metrics.sh
 
 ```bash
 export PATH="/test/venv/bin:$PATH"
-cd /workspaces/case3-dram220-n64-16k-c3-nr_workers16/lmcache
+cd /workspaces/case4-dram220-n64-16k-c3-nr_workers16/lmcache
 bash start_lmcache_vllm_io_metrics.sh
 ```
 
@@ -119,9 +119,9 @@ curl -f http://192.168.255.85:8000/v1/models
 
 ```bash
 export PATH="/test/venv/bin:$PATH"
-mkdir -p /workspaces/case3-dram220-n64-16k-c3-nr_workers16/results/lmcache-fill
-cd /workspaces/case3-dram220-n64-16k-c3-nr_workers16/results/lmcache-fill
-bash /workspaces/case3-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test_90s.sh
+mkdir -p /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/lmcache-fill
+cd /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/lmcache-fill
+bash /workspaces/case4-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test_90s.sh
 ```
 
 ### 3.4 停止并重启
@@ -135,9 +135,9 @@ bash /workspaces/case3-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-pres
 
 ```bash
 export PATH="/test/venv/bin:$PATH"
-mkdir -p /workspaces/case3-dram220-n64-16k-c3-nr_workers16/results/lmcache-disk-hit
-cd /workspaces/case3-dram220-n64-16k-c3-nr_workers16/results/lmcache-disk-hit
-bash /workspaces/case3-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test_90s.sh
+mkdir -p /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/lmcache-disk-hit
+cd /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/lmcache-disk-hit
+bash /workspaces/case4-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test_90s.sh
 ```
 
 记录第二轮结果及同期缓存命中/磁盘读取日志。完成后停止 LMCache 和 vLLM，再测试 YRCache。
@@ -158,7 +158,7 @@ rm -rf /test/data_disk_1/case2-yrcache/*
 ```bash
 export PATH="/test/venv/bin:$PATH"
 mkdir -p /test/yrcache_export
-cd /workspaces/case3-dram220-n64-16k-c3-nr_workers16/yrcache
+cd /workspaces/case4-dram220-n64-16k-c3-nr_workers16/yrcache
 bash start_yrcache_vllm_1_9.sh
 ```
 
@@ -172,9 +172,9 @@ curl -f http://192.168.255.85:8000/v1/models
 
 ```bash
 export PATH="/test/venv/bin:$PATH"
-mkdir -p /workspaces/case3-dram220-n64-16k-c3-nr_workers16/results/yrcache-fill
-cd /workspaces/case3-dram220-n64-16k-c3-nr_workers16/results/yrcache-fill
-bash /workspaces/case3-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test_90s.sh
+mkdir -p /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/yrcache-fill
+cd /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/yrcache-fill
+bash /workspaces/case4-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test_90s.sh
 ```
 
 ### 4.4 停止并重启
@@ -195,9 +195,9 @@ ps -eo pid,ppid,args --forest | grep -E '[v]llm|[y]rcache'
 
 ```bash
 export PATH="/test/venv/bin:$PATH"
-mkdir -p /workspaces/case3-dram220-n64-16k-c3-nr_workers16/results/yrcache-disk-hit
-cd /workspaces/case3-dram220-n64-16k-c3-nr_workers16/results/yrcache-disk-hit
-bash /workspaces/case3-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test_90s.sh
+mkdir -p /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/yrcache-disk-hit
+cd /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/yrcache-disk-hit
+bash /workspaces/case4-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test_90s.sh
 ```
 
 记录第二轮结果及同期缓存命中/磁盘读取日志，测试结束后停止本次实例。

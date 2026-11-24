@@ -1,4 +1,4 @@
-# Case 3 · 220G-DRAM · n64-16k-c3 local disk KV cache benchmark
+# Case 4 · 220G-DRAM · n64-16k-c3 local disk KV cache benchmark
 
 English | [中文](README.zh-CN.md)
 
@@ -8,7 +8,7 @@ The workload represents about 193.17 GiB of KV data at 192 KiB/token. Check evic
 
 ## Before you start
 
-The reference setup uses LMCache 0.5.3 (custom build with I/O metrics), YRCache 1.9.0, vLLM 0.24.0, EvalScope 1.10.0, Python 3.12 and DeepSeek-R1-Distill-Qwen-14B. Supply the model, software, GPU and a dedicated local cache disk. The examples assume the case directory at `/workspaces/case3-dram220-n64-16k-c3-nr_workers16`. Adjust this path and the host-specific settings below.
+The reference setup uses LMCache 0.5.3 (custom build with I/O metrics), YRCache 1.9.0, vLLM 0.24.0, EvalScope 1.10.0, Python 3.12 and DeepSeek-R1-Distill-Qwen-14B. Supply the model, software, GPU and a dedicated local cache disk. The examples assume the case directory at `/workspaces/case4-dram220-n64-16k-c3-nr_workers16`. Adjust this path and the host-specific settings below.
 
 | Setting | Where to check |
 | --- | --- |
@@ -30,7 +30,7 @@ rm -rf /test/data_disk/case2-lmcache/*
 2. Start LMCache in terminal A. Keep it running.
 
 ```bash
-cd /workspaces/case3-dram220-n64-16k-c3-nr_workers16/lmcache
+cd /workspaces/case4-dram220-n64-16k-c3-nr_workers16/lmcache
 bash start_lmcache_io_metrics.sh
 ```
 
@@ -38,7 +38,7 @@ bash start_lmcache_io_metrics.sh
 
 ```bash
 export PATH="/test/venv/bin:$PATH"
-cd /workspaces/case3-dram220-n64-16k-c3-nr_workers16/lmcache
+cd /workspaces/case4-dram220-n64-16k-c3-nr_workers16/lmcache
 bash start_lmcache_vllm_io_metrics.sh
 ```
 
@@ -50,18 +50,18 @@ curl -f http://192.168.255.85:8000/v1/models
 
 ```bash
 export PATH="/test/venv/bin:$PATH"
-mkdir -p /workspaces/case3-dram220-n64-16k-c3-nr_workers16/results/lmcache-fill
-cd /workspaces/case3-dram220-n64-16k-c3-nr_workers16/results/lmcache-fill
-bash /workspaces/case3-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test_90s.sh
+mkdir -p /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/lmcache-fill
+cd /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/lmcache-fill
+bash /workspaces/case4-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test_90s.sh
 ```
 
 5. Confirm all 64 requests succeeded and disk writes finished without errors. Stop vLLM in B with Ctrl+C, then stop LMCache in A. Wait for their workers to exit. **Keep the disk data** and repeat steps 2–4 through the API readiness check only. Run the measurement below.
 
 ```bash
 export PATH="/test/venv/bin:$PATH"
-mkdir -p /workspaces/case3-dram220-n64-16k-c3-nr_workers16/results/lmcache-disk-hit
-cd /workspaces/case3-dram220-n64-16k-c3-nr_workers16/results/lmcache-disk-hit
-bash /workspaces/case3-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test_90s.sh
+mkdir -p /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/lmcache-disk-hit
+cd /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/lmcache-disk-hit
+bash /workspaces/case4-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test_90s.sh
 ```
 
 Save the results and corresponding cache logs, then stop both services before switching backends.
@@ -80,7 +80,7 @@ rm -rf /test/data_disk_1/case2-yrcache/*
 ```bash
 export PATH="/test/venv/bin:$PATH"
 mkdir -p /test/yrcache_export
-cd /workspaces/case3-dram220-n64-16k-c3-nr_workers16/yrcache
+cd /workspaces/case4-dram220-n64-16k-c3-nr_workers16/yrcache
 bash start_yrcache_vllm_1_9.sh
 ```
 
@@ -92,9 +92,9 @@ curl -f http://192.168.255.85:8000/v1/models
 
 ```bash
 export PATH="/test/venv/bin:$PATH"
-mkdir -p /workspaces/case3-dram220-n64-16k-c3-nr_workers16/results/yrcache-fill
-cd /workspaces/case3-dram220-n64-16k-c3-nr_workers16/results/yrcache-fill
-bash /workspaces/case3-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test_90s.sh
+mkdir -p /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/yrcache-fill
+cd /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/yrcache-fill
+bash /workspaces/case4-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test_90s.sh
 ```
 
 4. Confirm all 64 requests succeeded and checkpoint writes completed. Identify this instance's vLLM process.
@@ -107,9 +107,9 @@ Send `kill -TERM <PID>` to its main process and wait for its workers to exit. Ch
 
 ```bash
 export PATH="/test/venv/bin:$PATH"
-mkdir -p /workspaces/case3-dram220-n64-16k-c3-nr_workers16/results/yrcache-disk-hit
-cd /workspaces/case3-dram220-n64-16k-c3-nr_workers16/results/yrcache-disk-hit
-bash /workspaces/case3-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test_90s.sh
+mkdir -p /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/yrcache-disk-hit
+cd /workspaces/case4-dram220-n64-16k-c3-nr_workers16/results/yrcache-disk-hit
+bash /workspaces/case4-dram220-n64-16k-c3-nr_workers16/evalscope/n64-16k-c3-prestress_test_90s.sh
 ```
 
 Save the logs and stop the instance.
