@@ -88,7 +88,7 @@
       "pluginVersion": "12.2.1",
       "targets": [
         {
-          "expr": "count(count by (worker_ip) (yrcache_client_lookup_lat_count{service_name=~\"$service_name\"}))",
+          "expr": "count(count by (worker_ip) (yrcache_client_lookup_lat_count{job=\"yrcache\", service_name=~\"$service_name\"}))",
           "refId": "A"
         }
       ],
@@ -149,7 +149,7 @@
       "pluginVersion": "12.2.1",
       "targets": [
         {
-          "expr": "count(count by (worker_ip, worker_id, rank_id) (yrcache_client_lookup_lat_count{service_name=~\"$service_name\"}))",
+          "expr": "count(count by (worker_ip, worker_id, rank_id) (yrcache_client_lookup_lat_count{job=\"yrcache\", service_name=~\"$service_name\"}))",
           "refId": "A"
         }
       ],
@@ -808,7 +808,7 @@
             "lineWidth": 1,
             "showPoints": "never"
           },
-          "unit": "tok/s"
+          "unit": "suffix:tokens/s"
         },
         "overrides": []
       },
@@ -833,26 +833,26 @@
       "targets": [
         {
           "expr": "sum by (service_name) (rate(vllm:prompt_tokens_total{service_name=~\"$service_name\"}[$__rate_interval]))",
-          "legendFormat": "prompt token总数",
+          "legendFormat": "prompt token速率",
           "refId": "A"
         },
         {
           "expr": "sum by (service_name) (rate(vllm:prompt_tokens_by_source_total{service_name=~\"$service_name\",source=\"local_cache_hit\"}[$__rate_interval]))",
-          "legendFormat": "gpu显存命中token数",
+          "legendFormat": "GPU显存命中token速率",
           "refId": "B"
         },
         {
           "expr": "sum by (service_name) (rate(vllm:prompt_tokens_by_source_total{service_name=~\"$service_name\",source=\"external_kv_transfer\"}[$__rate_interval]))",
-          "legendFormat": "YRCache命中token数",
+          "legendFormat": "YRCache命中token速率",
           "refId": "C"
         },
         {
           "expr": "sum by (service_name) (rate(vllm:prompt_tokens_by_source_total{service_name=~\"$service_name\",source=\"local_compute\"}[$__rate_interval]))",
-          "legendFormat": "需要计算的token数",
+          "legendFormat": "需要计算的token速率",
           "refId": "D"
         }
       ],
-      "title": "Prompt Token 构成",
+      "title": "Prompt Token速率",
       "type": "timeseries"
     },
     {
@@ -1018,7 +1018,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (service_name) (rate(yrcache_client_lookup_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_client_lookup_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "expr": "sum by (service_name) (rate(yrcache_client_lookup_lat_sum{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_client_lookup_lat_count{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "lookup Total耗时（请求级）",
           "refId": "A"
         },
@@ -1104,7 +1104,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (service_name) (rate(yrcache_client_lookup_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_client_lookup_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "expr": "sum by (service_name) (rate(yrcache_client_lookup_lat_sum{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_client_lookup_lat_count{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "lookup Total耗时（请求级）",
           "refId": "A"
         },
@@ -1190,7 +1190,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (service_name) (rate(yrcache_client_lookup_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_client_lookup_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "expr": "sum by (service_name) (rate(yrcache_client_lookup_lat_sum{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_client_lookup_lat_count{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "lookup Total耗时（请求级）",
           "refId": "A"
         },
@@ -1296,7 +1296,7 @@
           "refId": "D"
         },
         {
-          "expr": "sum by (service_name) (rate(yrcache_client_lookup_and_prefetch_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_client_lookup_and_prefetch_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "expr": "sum by (service_name) (rate(yrcache_client_lookup_and_prefetch_lat_sum{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_client_lookup_and_prefetch_lat_count{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "lookup Total耗时（请求级）",
           "refId": "E"
         },
@@ -1311,57 +1311,67 @@
           "refId": "G"
         },
         {
+          "expr": "sum by (service_name) (rate(yrcache_prefetch_lookup_prepare_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_prefetch_lookup_prepare_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "legendFormat": "lookup准备耗时（请求级）",
+          "refId": "H"
+        },
+        {
           "expr": "sum by (service_name) (rate(yrcache_prefetch_lookup_dram_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_prefetch_lookup_dram_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "内存层lookup耗时（请求级）",
-          "refId": "H"
+          "refId": "I"
         },
         {
           "expr": "sum by (service_name) (rate(yrcache_prefetch_lookup_ssd_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_prefetch_lookup_ssd_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "本地SSD层lookup耗时（请求级）",
-          "refId": "I"
+          "refId": "J"
         },
         {
           "expr": "sum by (service_name) (rate(yrcache_prefetch_lookup_shared_storage_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_prefetch_lookup_shared_storage_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "共享存储层lookup耗时（请求级）",
-          "refId": "J"
+          "refId": "K"
+        },
+        {
+          "expr": "sum by (service_name) (rate(yrcache_engine_get_chunk_queue_wait_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_engine_get_chunk_queue_wait_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "legendFormat": "chunk read排队耗时（chunk）",
+          "refId": "L"
         },
         {
           "expr": "sum by (service_name) (rate(yrcache_dram_chunk_lookup_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_dram_chunk_lookup_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "内存层chunk lookup耗时（chunk）",
-          "refId": "K"
+          "refId": "M"
         },
         {
           "expr": "sum by (service_name) (rate(yrcache_ssd_chunk_lookup_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_ssd_chunk_lookup_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "本地SSD层chunk lookup耗时（chunk）",
-          "refId": "L"
+          "refId": "N"
         },
         {
           "expr": "sum by (service_name) (rate(yrcache_shared_storage_chunk_lookup_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_shared_storage_chunk_lookup_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "共享存储层chunk lookup耗时（chunk）",
-          "refId": "M"
+          "refId": "O"
         },
         {
           "expr": "sum by (service_name) (rate(yrcache_ssd_get_index_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_ssd_get_index_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "本地SSD层查索引耗时（chunk）",
-          "refId": "N"
+          "refId": "P"
         },
         {
           "expr": "sum by (service_name) (rate(yrcache_ssd_get_data_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_ssd_get_data_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "本地SSD层读数据耗时（chunk）",
-          "refId": "O"
+          "refId": "Q"
         },
         {
           "expr": "sum by (service_name) (rate(yrcache_shared_storage_get_index_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_shared_storage_get_index_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "共享存储查索引耗时（chunk）",
-          "refId": "P"
+          "refId": "R"
         },
         {
           "expr": "sum by (service_name) (rate(yrcache_shared_storage_get_data_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_shared_storage_get_data_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "共享存储读数据耗时（chunk）",
-          "refId": "Q"
+          "refId": "S"
         }
       ],
-      "title": "Lookup and Prefetch链路延迟（avg）",
+      "title": "异步lookup+prefetch链路延迟（avg）",
       "type": "timeseries"
     },
     {
@@ -1422,7 +1432,7 @@
           "refId": "D"
         },
         {
-          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_client_lookup_and_prefetch_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_client_lookup_and_prefetch_lat_bucket{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "lookup Total耗时（请求级）",
           "refId": "E"
         },
@@ -1437,57 +1447,67 @@
           "refId": "G"
         },
         {
+          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_prefetch_lookup_prepare_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "lookup准备耗时（请求级）",
+          "refId": "H"
+        },
+        {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_prefetch_lookup_dram_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "内存层lookup耗时（请求级）",
-          "refId": "H"
+          "refId": "I"
         },
         {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_prefetch_lookup_ssd_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "本地SSD层lookup耗时（请求级）",
-          "refId": "I"
+          "refId": "J"
         },
         {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_prefetch_lookup_shared_storage_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "共享存储层lookup耗时（请求级）",
-          "refId": "J"
+          "refId": "K"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_engine_get_chunk_queue_wait_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "chunk read排队耗时（chunk）",
+          "refId": "L"
         },
         {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_dram_chunk_lookup_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "内存层chunk lookup耗时（chunk）",
-          "refId": "K"
+          "refId": "M"
         },
         {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_ssd_chunk_lookup_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "本地SSD层chunk lookup耗时（chunk）",
-          "refId": "L"
+          "refId": "N"
         },
         {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_shared_storage_chunk_lookup_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "共享存储层chunk lookup耗时（chunk）",
-          "refId": "M"
+          "refId": "O"
         },
         {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_ssd_get_index_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "本地SSD层查索引耗时（chunk）",
-          "refId": "N"
+          "refId": "P"
         },
         {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_ssd_get_data_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "本地SSD层读数据耗时（chunk）",
-          "refId": "O"
+          "refId": "Q"
         },
         {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_shared_storage_get_index_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "共享存储查索引耗时（chunk）",
-          "refId": "P"
+          "refId": "R"
         },
         {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_shared_storage_get_data_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "共享存储读数据耗时（chunk）",
-          "refId": "Q"
+          "refId": "S"
         }
       ],
-      "title": "Lookup and Prefetch链路延迟（P99）",
+      "title": "异步lookup+prefetch链路延迟（P99）",
       "type": "timeseries"
     },
     {
@@ -1548,7 +1568,7 @@
           "refId": "D"
         },
         {
-          "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_client_lookup_and_prefetch_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_client_lookup_and_prefetch_lat_bucket{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "lookup Total耗时（请求级）",
           "refId": "E"
         },
@@ -1563,57 +1583,67 @@
           "refId": "G"
         },
         {
+          "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_prefetch_lookup_prepare_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "lookup准备耗时（请求级）",
+          "refId": "H"
+        },
+        {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_prefetch_lookup_dram_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "内存层lookup耗时（请求级）",
-          "refId": "H"
+          "refId": "I"
         },
         {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_prefetch_lookup_ssd_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "本地SSD层lookup耗时（请求级）",
-          "refId": "I"
+          "refId": "J"
         },
         {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_prefetch_lookup_shared_storage_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "共享存储层lookup耗时（请求级）",
-          "refId": "J"
+          "refId": "K"
+        },
+        {
+          "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_engine_get_chunk_queue_wait_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "chunk read排队耗时（chunk）",
+          "refId": "L"
         },
         {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_dram_chunk_lookup_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "内存层chunk lookup耗时（chunk）",
-          "refId": "K"
+          "refId": "M"
         },
         {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_ssd_chunk_lookup_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "本地SSD层chunk lookup耗时（chunk）",
-          "refId": "L"
+          "refId": "N"
         },
         {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_shared_storage_chunk_lookup_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "共享存储层chunk lookup耗时（chunk）",
-          "refId": "M"
+          "refId": "O"
         },
         {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_ssd_get_index_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "本地SSD层查索引耗时（chunk）",
-          "refId": "N"
+          "refId": "P"
         },
         {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_ssd_get_data_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "本地SSD层读数据耗时（chunk）",
-          "refId": "O"
+          "refId": "Q"
         },
         {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_shared_storage_get_index_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "共享存储查索引耗时（chunk）",
-          "refId": "P"
+          "refId": "R"
         },
         {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_shared_storage_get_data_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "共享存储读数据耗时（chunk）",
-          "refId": "Q"
+          "refId": "S"
         }
       ],
-      "title": "Lookup and Prefetch链路延迟（P9999）",
+      "title": "异步lookup+prefetch链路延迟（P9999）",
       "type": "timeseries"
     },
     {
@@ -1654,12 +1684,12 @@
       },
       "targets": [
         {
-          "expr": "sum by (service_name) (rate(yrcache_client_get_total_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_client_get_total_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "expr": "sum by (service_name) (rate(yrcache_client_get_total_lat_sum{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_client_get_total_lat_count{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "Get Total 耗时（请求级）",
           "refId": "A"
         },
         {
-          "expr": "sum by (service_name) (rate(yrcache_client_get_engine_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_client_get_engine_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "expr": "sum by (service_name) (rate(yrcache_client_get_engine_lat_sum{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_client_get_engine_lat_count{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "调用引擎get请求耗时（请求级）",
           "refId": "B"
         },
@@ -1709,34 +1739,39 @@
           "refId": "K"
         },
         {
+          "expr": "sum by (service_name) (rate(yrcache_engine_get_chunk_queue_wait_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_engine_get_chunk_queue_wait_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "legendFormat": "chunk read排队耗时（chunk）",
+          "refId": "L"
+        },
+        {
           "expr": "sum by (service_name) (rate(yrcache_dram_get_index_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_dram_get_index_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "内存层查索引耗时（chunk）",
-          "refId": "L"
+          "refId": "M"
         },
         {
           "expr": "sum by (service_name) (rate(yrcache_ssd_get_index_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_ssd_get_index_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "本地SSD层查索引耗时（chunk）",
-          "refId": "M"
+          "refId": "N"
         },
         {
           "expr": "sum by (service_name) (rate(yrcache_ssd_get_data_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_ssd_get_data_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "本地SSD层读数据耗时（chunk）",
-          "refId": "N"
+          "refId": "O"
         },
         {
           "expr": "sum by (service_name) (rate(yrcache_shared_storage_get_index_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_shared_storage_get_index_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "共享存储查索引耗时（chunk）",
-          "refId": "O"
+          "refId": "P"
         },
         {
           "expr": "sum by (service_name) (rate(yrcache_shared_storage_get_data_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_shared_storage_get_data_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "共享存储读数据耗时（chunk）",
-          "refId": "P"
+          "refId": "Q"
         },
         {
           "expr": "sum by (service_name) (rate(yrcache_engine_chunk_get_h2d_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_engine_chunk_get_h2d_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "内存 to GPU 耗时（chunk）",
-          "refId": "Q"
+          "refId": "R"
         }
       ],
       "title": "Get链路延迟（avg）",
@@ -1780,12 +1815,12 @@
       },
       "targets": [
         {
-          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_client_get_total_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_client_get_total_lat_bucket{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "Get Total 耗时（请求级）",
           "refId": "A"
         },
         {
-          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_client_get_engine_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_client_get_engine_lat_bucket{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "调用引擎get请求耗时（请求级）",
           "refId": "B"
         },
@@ -1835,34 +1870,39 @@
           "refId": "K"
         },
         {
+          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_engine_get_chunk_queue_wait_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "chunk read排队耗时（chunk）",
+          "refId": "L"
+        },
+        {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_dram_get_index_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "内存层查索引耗时（chunk）",
-          "refId": "L"
+          "refId": "M"
         },
         {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_ssd_get_index_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "本地SSD层查索引耗时（chunk）",
-          "refId": "M"
+          "refId": "N"
         },
         {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_ssd_get_data_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "本地SSD层读数据耗时（chunk）",
-          "refId": "N"
+          "refId": "O"
         },
         {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_shared_storage_get_index_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "共享存储查索引耗时（chunk）",
-          "refId": "O"
+          "refId": "P"
         },
         {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_shared_storage_get_data_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "共享存储读数据耗时（chunk）",
-          "refId": "P"
+          "refId": "Q"
         },
         {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_engine_chunk_get_h2d_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "内存 to GPU 耗时（chunk）",
-          "refId": "Q"
+          "refId": "R"
         }
       ],
       "title": "Get链路延迟（P99）",
@@ -1906,12 +1946,12 @@
       },
       "targets": [
         {
-          "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_client_get_total_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_client_get_total_lat_bucket{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "Get Total 耗时（请求级）",
           "refId": "A"
         },
         {
-          "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_client_get_engine_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_client_get_engine_lat_bucket{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "调用引擎get请求耗时（请求级）",
           "refId": "B"
         },
@@ -1961,34 +2001,39 @@
           "refId": "K"
         },
         {
+          "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_engine_get_chunk_queue_wait_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "chunk read排队耗时（chunk）",
+          "refId": "L"
+        },
+        {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_dram_get_index_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "内存层查索引耗时（chunk）",
-          "refId": "L"
+          "refId": "M"
         },
         {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_ssd_get_index_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "本地SSD层查索引耗时（chunk）",
-          "refId": "M"
+          "refId": "N"
         },
         {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_ssd_get_data_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "本地SSD层读数据耗时（chunk）",
-          "refId": "N"
+          "refId": "O"
         },
         {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_shared_storage_get_index_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "共享存储查索引耗时（chunk）",
-          "refId": "O"
+          "refId": "P"
         },
         {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_shared_storage_get_data_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "共享存储读数据耗时（chunk）",
-          "refId": "P"
+          "refId": "Q"
         },
         {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_engine_chunk_get_h2d_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "内存 to GPU 耗时（chunk）",
-          "refId": "Q"
+          "refId": "R"
         }
       ],
       "title": "Get链路延迟（P9999）",
@@ -2032,12 +2077,12 @@
       },
       "targets": [
         {
-          "expr": "sum by (service_name) (rate(yrcache_client_save_submit_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_client_save_submit_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "expr": "sum by (service_name) (rate(yrcache_client_save_submit_lat_sum{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_client_save_submit_lat_count{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "Set Total 耗时（请求级）",
           "refId": "A"
         },
         {
-          "expr": "sum by (service_name) (rate(yrcache_client_store_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_client_store_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "expr": "sum by (service_name) (rate(yrcache_client_store_lat_sum{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_client_store_lat_count{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "调用引擎set耗时（请求级）",
           "refId": "B"
         },
@@ -2047,39 +2092,79 @@
           "refId": "C"
         },
         {
+          "expr": "sum by (service_name) (rate(yrcache_engine_set_prepare_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_engine_set_prepare_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "legendFormat": "引擎层Set/BatchSet准备耗时（请求级）",
+          "refId": "D"
+        },
+        {
+          "expr": "sum by (service_name) (rate(yrcache_engine_set_job_enqueue_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_engine_set_job_enqueue_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "legendFormat": "Set Jobs入队延迟（请求级）",
+          "refId": "E"
+        },
+        {
+          "expr": "sum by (service_name) (rate(yrcache_engine_set_jobs_queued_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_engine_set_jobs_queued_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "legendFormat": "Set Jobs队列等待延迟（请求级）",
+          "refId": "F"
+        },
+        {
+          "expr": "sum by (service_name) (rate(yrcache_engine_dram_set_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_engine_dram_set_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "legendFormat": "内存层Set耗时（请求级）",
+          "refId": "G"
+        },
+        {
+          "expr": "sum by (service_name) (rate(yrcache_engine_ssd_set_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_engine_ssd_set_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "legendFormat": "本地SSD层Set耗时（请求级）",
+          "refId": "H"
+        },
+        {
+          "expr": "sum by (service_name) (rate(yrcache_engine_shared_storage_set_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_engine_shared_storage_set_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "legendFormat": "共享存储层Set耗时（请求级）",
+          "refId": "I"
+        },
+        {
+          "expr": "sum by (service_name) (rate(yrcache_engine_set_async_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_engine_set_async_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "legendFormat": "Set异步总延迟（请求级）",
+          "refId": "J"
+        },
+        {
           "expr": "sum by (service_name) (rate(yrcache_engine_set_d2h_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_engine_set_d2h_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "GPU to 内存耗时（请求级）",
-          "refId": "D"
+          "refId": "K"
         },
         {
           "expr": "sum by (service_name) (rate(yrcache_engine_chunk_set_d2h_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_engine_chunk_set_d2h_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "GPU to 内存耗时（chunk）",
-          "refId": "E"
+          "refId": "L"
+        },
+        {
+          "expr": "sum by (service_name) (rate(yrcache_engine_set_chunk_queue_wait_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_engine_set_chunk_queue_wait_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "legendFormat": "chunk write排队耗时（chunk）",
+          "refId": "M"
         },
         {
           "expr": "sum by (service_name) (rate(yrcache_dram_set_index_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_dram_set_index_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "内存层建立索引耗时（chunk）",
-          "refId": "F"
+          "refId": "N"
         },
         {
           "expr": "sum by (service_name) (rate(yrcache_ssd_set_index_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_ssd_set_index_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "本地SSD层建立索引耗时（chunk）",
-          "refId": "G"
+          "refId": "O"
         },
         {
           "expr": "sum by (service_name) (rate(yrcache_ssd_set_data_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_ssd_set_data_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "本地SSD层写数据耗时（chunk）",
-          "refId": "H"
+          "refId": "P"
         },
         {
           "expr": "sum by (service_name) (rate(yrcache_shared_storage_set_index_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_shared_storage_set_index_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "共享存储建立索引耗时（chunk）",
-          "refId": "I"
+          "refId": "Q"
         },
         {
           "expr": "sum by (service_name) (rate(yrcache_shared_storage_set_data_lat_sum{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_shared_storage_set_data_lat_count{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "共享存储写数据耗时（chunk）",
-          "refId": "J"
+          "refId": "R"
         }
       ],
       "title": "Set链路延迟（avg）",
@@ -2123,12 +2208,12 @@
       },
       "targets": [
         {
-          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_client_save_submit_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_client_save_submit_lat_bucket{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "Set Total 耗时（请求级）",
           "refId": "A"
         },
         {
-          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_client_store_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_client_store_lat_bucket{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "调用引擎set耗时（请求级）",
           "refId": "B"
         },
@@ -2138,39 +2223,79 @@
           "refId": "C"
         },
         {
+          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_engine_set_prepare_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "引擎层Set/BatchSet准备耗时（请求级）",
+          "refId": "D"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_engine_set_job_enqueue_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "Set Jobs入队延迟（请求级）",
+          "refId": "E"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_engine_set_jobs_queued_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "Set Jobs队列等待延迟（请求级）",
+          "refId": "F"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_engine_dram_set_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "内存层Set耗时（请求级）",
+          "refId": "G"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_engine_ssd_set_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "本地SSD层Set耗时（请求级）",
+          "refId": "H"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_engine_shared_storage_set_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "共享存储层Set耗时（请求级）",
+          "refId": "I"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_engine_set_async_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "Set异步总延迟（请求级）",
+          "refId": "J"
+        },
+        {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_engine_set_d2h_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "GPU to 内存耗时（请求级）",
-          "refId": "D"
+          "refId": "K"
         },
         {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_engine_chunk_set_d2h_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "GPU to 内存耗时（chunk）",
-          "refId": "E"
+          "refId": "L"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_engine_set_chunk_queue_wait_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "chunk write排队耗时（chunk）",
+          "refId": "M"
         },
         {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_dram_set_index_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "内存层建立索引耗时（chunk）",
-          "refId": "F"
+          "refId": "N"
         },
         {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_ssd_set_index_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "本地SSD层建立索引耗时（chunk）",
-          "refId": "G"
+          "refId": "O"
         },
         {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_ssd_set_data_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "本地SSD层写数据耗时（chunk）",
-          "refId": "H"
+          "refId": "P"
         },
         {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_shared_storage_set_index_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "共享存储建立索引耗时（chunk）",
-          "refId": "I"
+          "refId": "Q"
         },
         {
           "expr": "histogram_quantile(0.99, sum by (le, service_name) (rate(yrcache_shared_storage_set_data_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "共享存储写数据耗时（chunk）",
-          "refId": "J"
+          "refId": "R"
         }
       ],
       "title": "Set链路延迟（P99）",
@@ -2214,12 +2339,12 @@
       },
       "targets": [
         {
-          "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_client_save_submit_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_client_save_submit_lat_bucket{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "Set Total 耗时（请求级）",
           "refId": "A"
         },
         {
-          "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_client_store_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_client_store_lat_bucket{job=\"yrcache\", service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "调用引擎set耗时（请求级）",
           "refId": "B"
         },
@@ -2229,39 +2354,79 @@
           "refId": "C"
         },
         {
+          "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_engine_set_prepare_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "引擎层Set/BatchSet准备耗时（请求级）",
+          "refId": "D"
+        },
+        {
+          "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_engine_set_job_enqueue_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "Set Jobs入队延迟（请求级）",
+          "refId": "E"
+        },
+        {
+          "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_engine_set_jobs_queued_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "Set Jobs队列等待延迟（请求级）",
+          "refId": "F"
+        },
+        {
+          "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_engine_dram_set_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "内存层Set耗时（请求级）",
+          "refId": "G"
+        },
+        {
+          "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_engine_ssd_set_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "本地SSD层Set耗时（请求级）",
+          "refId": "H"
+        },
+        {
+          "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_engine_shared_storage_set_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "共享存储层Set耗时（请求级）",
+          "refId": "I"
+        },
+        {
+          "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_engine_set_async_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "Set异步总延迟（请求级）",
+          "refId": "J"
+        },
+        {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_engine_set_d2h_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "GPU to 内存耗时（请求级）",
-          "refId": "D"
+          "refId": "K"
         },
         {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_engine_chunk_set_d2h_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "GPU to 内存耗时（chunk）",
-          "refId": "E"
+          "refId": "L"
+        },
+        {
+          "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_engine_set_chunk_queue_wait_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
+          "legendFormat": "chunk write排队耗时（chunk）",
+          "refId": "M"
         },
         {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_dram_set_index_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "内存层建立索引耗时（chunk）",
-          "refId": "F"
+          "refId": "N"
         },
         {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_ssd_set_index_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "本地SSD层建立索引耗时（chunk）",
-          "refId": "G"
+          "refId": "O"
         },
         {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_ssd_set_data_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "本地SSD层写数据耗时（chunk）",
-          "refId": "H"
+          "refId": "P"
         },
         {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_shared_storage_set_index_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "共享存储建立索引耗时（chunk）",
-          "refId": "I"
+          "refId": "Q"
         },
         {
           "expr": "histogram_quantile(0.9999, sum by (le, service_name) (rate(yrcache_shared_storage_set_data_lat_bucket{service_name=~\"$service_name\"}[$__rate_interval])))",
           "legendFormat": "共享存储写数据耗时（chunk）",
-          "refId": "J"
+          "refId": "R"
         }
       ],
       "title": "Set链路延迟（P9999）",
@@ -2394,22 +2559,22 @@
           "refId": "A"
         },
         {
-          "expr": "sum by (service_name) (rate(yrcache_ssd_write_request_total{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "expr": "sum by (service_name) (rate(yrcache_ssd_write_chunks_total{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "内存->本地SSD IOPS",
           "refId": "B"
         },
         {
-          "expr": "sum by (service_name) (rate(yrcache_shared_storage_write_request_total{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "expr": "sum by (service_name) (rate(yrcache_shared_storage_write_chunks_total{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "内存->共享存储层 IOPS",
           "refId": "C"
         },
         {
-          "expr": "sum by (service_name) (rate(yrcache_ssd_read_request_total{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "expr": "sum by (service_name) (rate(yrcache_ssd_read_chunks_total{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "本地SSD->内存 IOPS",
           "refId": "D"
         },
         {
-          "expr": "sum by (service_name) (rate(yrcache_shared_storage_read_request_total{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "expr": "sum by (service_name) (rate(yrcache_shared_storage_read_chunks_total{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "共享存储层->内存 IOPS",
           "refId": "E"
         },
@@ -2460,12 +2625,12 @@
       },
       "targets": [
         {
-          "expr": "sum by (service_name) (rate(yrcache_ssd_read_bytes_total{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_ssd_read_request_total{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "expr": "sum by (service_name) (rate(yrcache_ssd_read_bytes_total{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_ssd_read_chunks_total{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "本地SSD read IO size",
           "refId": "A"
         },
         {
-          "expr": "sum by (service_name) (rate(yrcache_ssd_write_bytes_total{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_ssd_write_request_total{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "expr": "sum by (service_name) (rate(yrcache_ssd_write_bytes_total{service_name=~\"$service_name\"}[$__rate_interval])) / sum by (service_name) (rate(yrcache_ssd_write_chunks_total{service_name=~\"$service_name\"}[$__rate_interval]))",
           "legendFormat": "本地SSD write IO size",
           "refId": "B"
         }
@@ -2598,7 +2763,7 @@
         "type": "prometheus",
         "uid": "cf5zm84e41v5se"
       },
-      "description": "prefetch 占用的 SSD 读带宽(专用预取读字节计数器待新增)。",
+      "description": "prefetch 占用的读带宽(预取成功搬运的字节速率)。",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -2631,8 +2796,8 @@
       },
       "targets": [
         {
-          "expr": "sum by (service_name) (rate(yrcache_prefetch_read_bytes_total{service_name=~\"$service_name\"}[$__rate_interval]))",
-          "legendFormat": "prefetch带宽（待新增）",
+          "expr": "sum by (service_name) (rate(yrcache_prefetch_success_bytes_total{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "legendFormat": "prefetch带宽",
           "refId": "A"
         }
       ],
@@ -2763,7 +2928,7 @@
             "lineWidth": 1,
             "showPoints": "never"
           },
-          "unit": "ops"
+          "unit": "suffix:chunk/s"
         },
         "overrides": []
       },
@@ -2787,18 +2952,18 @@
       },
       "targets": [
         {
-          "expr": "sum by (service_name) (rate(yrcache_dram_write_request_total{service_name=~\"$service_name\"}[$__rate_interval]))",
-          "legendFormat": "写入chunk数",
+          "expr": "sum by (service_name) (rate(yrcache_dram_write_chunks_total{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "legendFormat": "写入速率",
           "refId": "A"
         },
         {
-          "expr": "sum by (service_name) (rate(yrcache_dram_read_request_total{service_name=~\"$service_name\"}[$__rate_interval]))",
-          "legendFormat": "读取chunk数",
+          "expr": "sum by (service_name) (rate(yrcache_dram_read_chunks_total{service_name=~\"$service_name\"}[$__rate_interval]))",
+          "legendFormat": "读取速率",
           "refId": "B"
         },
         {
           "expr": "sum by (service_name) (rate(yrcache_dram_evicted_chunks_total{service_name=~\"$service_name\"}[$__rate_interval]))",
-          "legendFormat": "淘汰chunk数",
+          "legendFormat": "淘汰速率",
           "refId": "C"
         }
       ],
@@ -2892,6 +3057,5 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "YRCache_TTFT_Analysis",
-  "uid": "yrcache-monitor",
-  "version": 45
+  "uid": "yrcache-monitor"
 }
