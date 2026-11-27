@@ -2478,7 +2478,7 @@
         "type": "prometheus",
         "uid": "cf5zm84e41v5se"
       },
-      "description": "本地 SSD chunk 文件操作的在途并发数: 瞬时值与 scrape 窗口峰值, 按 read/write 分列(op/source 维度求和)。",
+      "description": "本地 SSD 与 H2D 的在途并发数：SSD 按 read/write 分列，H2D 按 request/chunk 分列。",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -2529,6 +2529,26 @@
           "expr": "sum by (service_name) (yrcache_engine_ssd_io_concurrency_window_peak{service_name=~\"$service_name\",op=\"write\"})",
           "legendFormat": "本地SSD write 峰值并发数",
           "refId": "D"
+        },
+        {
+          "expr": "sum by (service_name) (yrcache_engine_h2d_concurrency{service_name=~\"$service_name\",level=\"request\"})",
+          "legendFormat": "H2D正在处理的请求数",
+          "refId": "E"
+        },
+        {
+          "expr": "sum by (service_name) (yrcache_engine_h2d_concurrency{service_name=~\"$service_name\",level=\"chunk\"})",
+          "legendFormat": "H2D正在处理的chunk数",
+          "refId": "F"
+        },
+        {
+          "expr": "sum by (service_name) (yrcache_engine_h2d_concurrency_window_peak{service_name=~\"$service_name\",level=\"request\"})",
+          "legendFormat": "H2D峰值正在处理的请求数",
+          "refId": "G"
+        },
+        {
+          "expr": "sum by (service_name) (yrcache_engine_h2d_concurrency_window_peak{service_name=~\"$service_name\",level=\"chunk\"})",
+          "legendFormat": "H2D峰值正在处理的chunk数",
+          "refId": "H"
         }
       ],
       "title": "并发数量",
