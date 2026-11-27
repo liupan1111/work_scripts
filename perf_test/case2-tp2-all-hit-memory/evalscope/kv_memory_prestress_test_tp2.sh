@@ -13,9 +13,9 @@ set -o pipefail
 
 #--------------------------default-----------------------------------
 # 预热/预埋走 8000, 缓存命中测试走 8000
-WARMUP_URL="http://192.168.255.85:8000/v1/chat/completions"
-PRESTRESS_URL="http://192.168.255.85:8000/v1/chat/completions"
-TEST_URL="http://192.168.255.85:8000/v1/chat/completions"
+WARMUP_URL="http://192.168.255.85:8001/v1/chat/completions"
+PRESTRESS_URL="http://192.168.255.85:8001/v1/chat/completions"
+TEST_URL="http://192.168.255.85:8001/v1/chat/completions"
 MODEL="deepseek-14b"
 TOKENIZER_PATH="/workspaces/modelscope-yrcache/modelscope/deepseek-ai/DeepSeek-R1-Distill-Qwen-14B"
 
